@@ -2918,7 +2918,7 @@ IMG_BOOL OSFlushCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 {
 	
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   x86_flush_cache_range, IMG_NULL);
+							   x86_flush_cache_range, (OuterCacheOp_t)IMG_NULL);
 }
 
 IMG_BOOL OSCleanCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
@@ -2927,7 +2927,7 @@ IMG_BOOL OSCleanCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 {
 	
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   x86_flush_cache_range, IMG_NULL);
+							   x86_flush_cache_range, (OuterCacheOp_t)IMG_NULL);
 }
 
 IMG_BOOL OSInvalidateCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
@@ -2936,7 +2936,7 @@ IMG_BOOL OSInvalidateCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 {
 	
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   x86_flush_cache_range, IMG_NULL);
+							   x86_flush_cache_range, (OuterCacheOp_t)IMG_NULL);
 }
 
 #else 
@@ -2994,7 +2994,7 @@ IMG_BOOL OSFlushCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 								IMG_UINT32 ui32Length)
 {
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   dmac_flush_range, outer_flush_range);
+							   dmac_flush_range, (OuterCacheOp_t)outer_flush_range);
 }
 
 IMG_BOOL OSCleanCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
@@ -3002,7 +3002,7 @@ IMG_BOOL OSCleanCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 								IMG_UINT32 ui32Length)
 {
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   pvr_dmac_clean_range, outer_clean_range);
+							   pvr_dmac_clean_range, (OuterCacheOp_t)outer_clean_range);
 }
 
 IMG_BOOL OSInvalidateCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
@@ -3010,7 +3010,7 @@ IMG_BOOL OSInvalidateCPUCacheRangeKM(IMG_HANDLE hOSMemHandle,
 									 IMG_UINT32 ui32Length)
 {
 	return CheckExecuteCacheOp(hOSMemHandle, pvRangeAddrStart, ui32Length,
-							   pvr_dmac_inv_range, outer_inv_range);
+							   pvr_dmac_inv_range, (OuterCacheOp_t)outer_inv_range);
 }
 
 #else 
