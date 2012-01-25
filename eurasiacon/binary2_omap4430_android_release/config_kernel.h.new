@@ -1,0 +1,3 @@
+#define ANDROID 
+#define PVR_NO_FULL_CACHE_OPS 
+#define PVR_NO_OMAP_TIMER 
