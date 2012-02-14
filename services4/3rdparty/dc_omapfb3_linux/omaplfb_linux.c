@@ -25,7 +25,6 @@
  ******************************************************************************/
 
 #include <linux/version.h>
-
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38))
 #ifndef AUTOCONF_INCLUDED
 #include <linux/config.h>
@@ -47,7 +46,14 @@
 #include <linux/workqueue.h>
 #include <linux/fb.h>
 #include <linux/console.h>
+
+#if defined PLAT_TI81xx
+#include <linux/ti81xxfb.h>
+#include <plat/ti81xx-vpss.h>
+#else
 #include <linux/omapfb.h>
+#endif
+
 #include <linux/mutex.h>
 
 #if defined(PVR_OMAPLFB_DRM_FB)
@@ -624,6 +630,33 @@ OMAPLFB_BOOL OMAPLFBSetUpdateMode(OMAPLFB_DEVINFO *psDevInfo, OMAPLFB_UPDATE_MOD
 
 OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
 {
+#if defined PLAT_TI81xx
+      int r;
+      void grpx_irq_wait_handler(void *data)
+
+      {
+          complete((struct completion *)data);
+      }
+
+      DECLARE_COMPLETION_ONSTACK(completion);
+
+      if (vps_grpx_register_isr((vsync_callback_t)grpx_irq_wait_handler, &completion, psDevInfo->uiFBDevID) != 0)
+      {
+          printk (KERN_WARNING DRIVER_PREFIX ": Failed to register for vsync call back\n");
+          return OMAPLFB_FALSE;
+      }
+
+//    timeout = wait_for_completion_interruptible_timeout(&completion, timeout);
+
+      r = wait_for_completion_interruptible(&completion);
+
+      if (vps_grpx_unregister_isr((vsync_callback_t)grpx_irq_wait_handler , &completion, psDevInfo->uiFBDevID) != 0)
+      {
+          printk (KERN_WARNING DRIVER_PREFIX ": Failed to un-register for vsync call back\n");
+          return OMAPLFB_FALSE;
+      }
+	return OMAPLFB_TRUE;
+#else
 #if defined(PVR_OMAPLFB_DRM_FB)
 	struct drm_connector *psConnector;
 
@@ -649,6 +682,7 @@ OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
 	}
 
 	return OMAPLFB_TRUE;
+#endif
 #endif
 }
 

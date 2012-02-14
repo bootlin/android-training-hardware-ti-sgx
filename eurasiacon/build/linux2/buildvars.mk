@@ -36,6 +36,10 @@ OPTIM ?= -O2
 COMMON_USER_FLAGS := $(OPTIM)
 endif
 
+ifeq ($(OMAPES), 6.x)
+COMMON_FLAGS += -DPLAT_TI81xx
+endif
+
 # FIXME: We should probably audit the driver for aliasing
 #
 COMMON_USER_FLAGS += -fno-strict-aliasing

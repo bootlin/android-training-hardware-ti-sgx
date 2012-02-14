@@ -34,6 +34,13 @@ endif
 
 TARGET_PRODUCT ?= omap3evm
 
+ifeq ($(OMAPES),6.x)
+SGXCORE := 530
+SGX_CORE_REV := 125
+PVR_SYSTEM := ti81xx
+endif
+
+
 ifeq ($(OMAPES),5.x)
 SGXCORE := 530
 SGX_CORE_REV := 125
