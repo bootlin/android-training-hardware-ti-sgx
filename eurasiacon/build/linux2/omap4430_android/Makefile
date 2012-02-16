@@ -38,6 +38,7 @@ ifeq ($(OMAPES),6.x)
 SGXCORE := 530
 SGX_CORE_REV := 125
 PVR_SYSTEM := ti81xx
+PLAT_TI81xx := 1
 endif
 
 
