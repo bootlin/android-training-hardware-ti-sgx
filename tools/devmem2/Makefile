@@ -42,6 +42,11 @@ $(PLAT_OBJPATH)/%.o: %.c
 	$(PLAT_CC) $(PLAT_CFLAGS) -c $(COMMON_INCLUDES) $(INCLUDES) $^ -o $@
 
 install:
+ifeq ($(OMAPES),3.x)
+	@echo "copying devmem2 to $(GFX_REL_ES3_LIB_SRCPATH_ANDROID)"
+	cp $(PLAT_OBJPATH)/$(OUTNAME) $(GFX_REL_ES3_LIB_SRCPATH_ANDROID)
+endif
+
 ifeq ($(OMAPES),4.x)
 	@echo "copying devmem2 to $(GFX_REL_ES4_LIB_SRCPATH_ANDROID)"
 	cp $(PLAT_OBJPATH)/$(OUTNAME) $(GFX_REL_ES4_LIB_SRCPATH_ANDROID)

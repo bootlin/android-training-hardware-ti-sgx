@@ -19,7 +19,7 @@ ifeq ($(OMAPES),3.x)
 		export EURASIAROOT=$(EURASIAROOT) && \
 		export ANDROID_ROOT=$(ANDROID_ROOT) && \
 		export ARCH=arm && \
-		make -C $(GFX_KERNMOD_SRCPATH)/eurasiacon/build/linux2/omap4430_android KERNELDIR=$(KERNEL_INSTALL_DIR) TARGET_PRODUCT=$(TARGET_PRODUCT) SGXCORE=530 SGXCOREREV=121 
+		make -C $(GFX_KERNMOD_SRCPATH)/eurasiacon/build/linux2/omap4430_android KERNELDIR=$(KERNEL_INSTALL_DIR) TARGET_PRODUCT=$(TARGET_PRODUCT) SGXCORE=530 SGXCOREREV=121 BUILD=release 
 	@echo "copying the sgx kernel modules to $(GFX_REL_ES3_LIB_SRCPATH_ANDROID)"
 	@cp -rf $(GFX_KERNMOD_SRCPATH)/eurasiacon/binary2_omap4430_android_release/target/pvrsrvkm.ko $(GFX_REL_ES3_LIB_SRCPATH_ANDROID)/. 
 	@cp -rf $(GFX_KERNMOD_SRCPATH)/eurasiacon/binary2_omap4430_android_release/target/omaplfb.ko $(GFX_REL_ES3_LIB_SRCPATH_ANDROID)/. 
