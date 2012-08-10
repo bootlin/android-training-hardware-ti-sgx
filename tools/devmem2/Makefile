@@ -15,8 +15,8 @@ DEBUG_RELEASE = Release
 PLAT_CFLAGS   = -Wall -DRELEASE -O2
 TOOLCHAIN = $(CSTOOL_DIR)
 PLAT_OBJPATH = ./Obj
-PLAT_LINK =  -lm -ldl -lc -fno-short-enums -L$(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/ -Wl,-dynamic-linker,/system/bin/linker -nostdlib -Wl,-T,$(ANDROID_ROOT)/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/arm-eabi/lib/ldscripts/armelf.x
-OBJECTS1 = $(ANDROID_ROOT)/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/arm-eabi/lib/ldscripts/armelf.x $(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/crtbegin_dynamic.o $(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/crtend_android.o
+PLAT_LINK =  -lm -ldl -lc -fno-short-enums -L$(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/ -Wl,-dynamic-linker,/system/bin/linker -nostdlib -Wl,-T,$(ANDROID_ROOT)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/arm-eabi/lib/ldscripts/armelf.x
+OBJECTS1 = $(ANDROID_ROOT)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/arm-eabi/lib/ldscripts/armelf.x $(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/crtbegin_dynamic.o $(ANDROID_ROOT)/out/target/product/$(TARGET_PRODUCT)/obj/lib/crtend_android.o
  
 SRCNAME = devmem2
 
