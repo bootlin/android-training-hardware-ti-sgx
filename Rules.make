@@ -10,11 +10,9 @@ GRAPHICS_INSTALL_DIR=$(ANDROID_ROOT_DIR)/hardware/ti/sgx
 #Path of Android Framework
 ANDROID_ROOT=$(ANDROID_ROOT_DIR)
 
-#set toolchain root path for arm-eabi
-CSTOOL_DIR=$(ANDROID_ROOT_DIR)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6
-CSTOOL_PREFIX=arm-eabi-
-CSTOOL_PATH=$(CSTOOL_DIR)/bin
-
+#set toolchain root path
+CSTOOL_PATH=$(dir $(TARGET_TOOLS_PREFIX))
+CSTOOL_PREFIX=$(notdir $(TARGET_TOOLS_PREFIX))
 
 #set the kernel installation path
 KERNEL_INSTALL_DIR=$(ANDROID_ROOT_DIR)/kernel
