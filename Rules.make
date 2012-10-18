@@ -15,7 +15,7 @@ CSTOOL_PATH=$(dir $(TARGET_TOOLS_PREFIX))
 CSTOOL_PREFIX=$(notdir $(TARGET_TOOLS_PREFIX))
 
 #set the kernel installation path
-KERNEL_INSTALL_DIR=$(ANDROID_ROOT_DIR)/kernel
+KERNEL_INSTALL_DIR=$(ANDROID_ROOT_DIR)/out/target/product/$(TARGET_PRODUCT)/obj/kernel
 
 #set filesystem path
 TARGETFS_INSTALL_DIR=$(ANDROID_ROOT_DIR)/out/target/product/$(TARGET_PRODUCT)/

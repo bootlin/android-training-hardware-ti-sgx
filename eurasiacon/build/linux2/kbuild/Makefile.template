@@ -77,7 +77,8 @@ ccflags-y += -D__linux__ -include $(OUT)/config_kernel.h \
  -I$(TOP)/services4/srvkm/common \
  -I$(TOP)/services4/srvkm/devices/sgx \
  -I$(TOP)/services4/srvkm/env/linux \
- -I$(TOP)/services4/srvkm/include
+ -I$(TOP)/services4/srvkm/include \
+ -I/datalocal/pankaj/linaro/android/kernel/drivers/video/omap2
 
 ifeq ($(PVR_LOCAL_HWDEFS),)
 ccflags-y += -I$(TOP)/services4/srvkm/hwdefs
