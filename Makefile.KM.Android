@@ -6,7 +6,7 @@ OMAPES:=INVALIDVAL
 .PHONY: clean_km cleankernelmodule
 .PHONY: help_km
 
-all_km: buildkernel builddevmem2
+all_km: buildkernel
 
 buildkernel:
  
@@ -42,7 +42,7 @@ else
 endif
 
 ############################### CLEAN ##################################
-clean_km: cleankernelmodule cleandevmem2
+clean_km: cleankernelmodule
 
 builddevmem2:
 	@echo "building devmem2..."
