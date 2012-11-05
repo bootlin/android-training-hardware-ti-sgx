@@ -5,7 +5,7 @@
 HOME=$(ANDROID_ROOT_DIR)
 
 #Current Directory where Graphics SDK is installed
-GRAPHICS_INSTALL_DIR=$(ANDROID_ROOT_DIR)/hardware/ti/sgx
+GRAPHICS_INSTALL_DIR=$(ANDROID_ROOT_DIR)/hardware/ti/sitara/sgx
 
 #Path of Android Framework
 ANDROID_ROOT=$(ANDROID_ROOT_DIR)
