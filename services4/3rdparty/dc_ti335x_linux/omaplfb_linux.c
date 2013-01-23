@@ -629,12 +629,12 @@ OMAPLFB_BOOL OMAPLFBSetUpdateMode(OMAPLFB_DEVINFO *psDevInfo, OMAPLFB_UPDATE_MOD
 
 OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
 {
-      int r;
+      int r,timeout;
+
       void grpx_irq_wait_handler(void *data)
 
       {
-
-          complete((struct completion *)data);
+	  complete((struct completion *)data);
 
       }
 
@@ -652,9 +652,10 @@ OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
 
       }
 
-//    timeout = wait_for_completion_interruptible_timeout(&completion, timeout);
+     timeout = wait_for_completion_interruptible_timeout(&completion, 3);
 
-      r = wait_for_completion_interruptible(&completion);
+     if(timeout<=0)
+          printk (KERN_WARNING DRIVER_PREFIX "vsync timed out - %d\n", timeout);
 
       if (unregister_vsync_cb((vsync_callback_t)grpx_irq_wait_handler , &completion, psDevInfo->uiFBDevID) != 0)
 
@@ -665,6 +666,8 @@ OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
           return OMAPLFB_FALSE;
 
       }
+      return OMAPLFB_TRUE;
+
 }
 
 OMAPLFB_BOOL OMAPLFBManualSync(OMAPLFB_DEVINFO *psDevInfo)
