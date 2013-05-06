@@ -28,7 +28,7 @@ load_pvr()
 
         insmod /system/bin/sgx/pvrsrvkm.ko
         insmod /system/bin/sgx/omaplfb.ko
-        sleep 1
+#        sleep 1
         chmod 0666 /dev/pvrsrvkm
         /system/bin/pvrsrvinit
         echo "Loaded PowerVR consumer services."
