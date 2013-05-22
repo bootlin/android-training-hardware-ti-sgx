@@ -56,7 +56,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "syslocal.h"
 
 #include <linux/platform_device.h>
+
+#if defined(PM_RUNTIME_SUPPORT)
 #include <linux/pm_runtime.h>
+#endif
 
 #if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
 #include <linux/opp.h>
@@ -384,7 +387,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	 * The DM timer API doesn't have a mechansim for obtaining the
 	 * physical address of the counter register.
 	 */
-	psSysSpecData->sTimerRegPhysBase.uiAddr = SYS_OMAP4430_GP11TIMER_REGS_SYS_PHYS_BASE;
+	psSysSpecData->sTimerRegPhysBase.uiAddr = SYS_TI335x_GPTIMER_REGS_SYS_PHYS_BASE;
 
 	return PVRSRV_OK;
 }
@@ -442,6 +445,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	IMG_UINT32 *pui32TimerEnable;
 	struct clk *psCLK;
 
+#if !defined(PM_RUNTIME_SUPPORT)
 	PVR_ASSERT(psSysSpecData->sTimerRegPhysBase.uiAddr == 0);
 
 	psCLK = clk_get(NULL, "sgx_ck");
@@ -452,6 +456,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	}
 
 	clk_enable(psCLK);
+#endif
 
 #if defined(PVR_OMAP4_TIMING_PRCM)
 	/* assert our dependence on the GPTIMER11 module */
@@ -508,7 +513,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 #endif	/* defined(PVR_OMAP4_TIMING_PRCM) */
 
 	/* Set the timer to non-posted mode */
-	sTimerRegPhysBase.uiAddr = SYS_OMAP4430_GP11TIMER_TSICR_SYS_PHYS_BASE;
+	sTimerRegPhysBase.uiAddr = SYS_TI335x_GPTIMER_TSICR_SYS_PHYS_BASE;
 	pui32TimerEnable = OSMapPhysToLin(sTimerRegPhysBase,
                   4,
                   PVRSRV_HAP_KERNEL_ONLY|PVRSRV_HAP_UNCACHED,
@@ -534,7 +539,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 		    hTimerEnable);
 
 	/* Enable the timer */
-	sTimerRegPhysBase.uiAddr = SYS_OMAP4430_GP11TIMER_ENABLE_SYS_PHYS_BASE;
+	sTimerRegPhysBase.uiAddr = SYS_TI335x_GPTIMER_ENABLE_SYS_PHYS_BASE;
 	pui32TimerEnable = OSMapPhysToLin(sTimerRegPhysBase,
                   4,
                   PVRSRV_HAP_KERNEL_ONLY|PVRSRV_HAP_UNCACHED,
@@ -627,7 +632,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	struct clk *psCLK;
 	PVR_UNREFERENCED_PARAMETER(psSysSpecData);
 
-
+#if !defined(PM_RUNTIME_SUPPORT)
 	psCLK = clk_get(NULL, "sgx_ck");
 	if (IS_ERR(psCLK))
 	{
@@ -636,6 +641,8 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	}
 
 	clk_enable(psCLK);
+#endif
+
 	return PVRSRV_OK;
 }
 static void ReleaseGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
@@ -696,7 +703,7 @@ IMG_VOID DisableSystemClocks(SYS_DATA *psSysData)
 	 */
 	DisableSGXClocks(psSysData);
 
-
+#if !defined(PM_RUNTIME_SUPPORT)
 	psCLK = clk_get(NULL, "sgx_ck");
 	if (IS_ERR(psCLK))
 	{
@@ -705,6 +712,7 @@ IMG_VOID DisableSystemClocks(SYS_DATA *psSysData)
 	}
 
 	clk_disable(psCLK);
+#endif
 	ReleaseGPTimer(psSysSpecData);
 }
 
