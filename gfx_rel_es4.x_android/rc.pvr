@@ -22,16 +22,12 @@
 load_pvr()
 {
 
-        /system/bin/devmem2 0x48004B48 w 0x2
-        /system/bin/devmem2 0x48004B10 w 0x1
-        /system/bin/devmem2 0x48004B00 w 0x2
-
         insmod /system/bin/sgx/pvrsrvkm.ko
         insmod /system/bin/sgx/omaplfb.ko
-#        sleep 1
         chmod 0666 /dev/pvrsrvkm
-        /system/bin/pvrsrvinit
-        echo "Loaded PowerVR consumer services."
+        /system/bin/pvrsrvctl --start --no-module
+        
+	echo "Loaded PowerVR consumer services."
         return 0;
 }
 

@@ -275,8 +275,6 @@ fi
 	install_file pvrsrvinit /system/bin/pvrsrvinit "binary" 0755 0:0
 	install_file pvrsrvctl /system/bin/pvrsrvctl "binary" 0755 0:0
 	install_file sgx_init_test /system/bin/sgx_init_test "binary" 0755 0:0
-	install_file devmem2 /system/bin/devmem2 "binary" 0755 0:0
-
 
 
 	# Install the standard unittests
