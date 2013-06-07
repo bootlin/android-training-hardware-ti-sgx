@@ -105,6 +105,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <linux/device.h>
 #endif /* PVR_LDM_DEVICE_CLASS */
 
+#include <linux/clk.h>
 #if defined(DEBUG) && defined(PVR_MANUAL_POWER_CONTROL)
 #include <asm/uaccess.h>
 #endif
@@ -289,10 +290,13 @@ LDM_DEV *gpsPVRLDMDev;
 
 #if defined(MODULE) && defined(PVR_LDM_PLATFORM_MODULE) && \
 	!defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if !defined(PM_RUNTIME_SUPPORT)
 static void PVRSRVDeviceRelease(struct device unref__ *pDevice)
 {
 }
+#endif
 
+#if !defined(PM_RUNTIME_SUPPORT)
 static struct platform_device powervr_device = {
 	.name			= DEVNAME,
 	.id				= -1,
@@ -301,7 +305,7 @@ static struct platform_device powervr_device = {
 	}
 };
 #endif
-
+#endif
 /*!
 ******************************************************************************
 
@@ -970,7 +974,7 @@ static int __init PVRCore_Init(void)
 		goto init_failed;
 	}
 
-#if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if !defined(PM_RUNTIME_SUPPORT)
 	if ((error = platform_device_register(&powervr_device)) != 0)
 	{
 		platform_driver_unregister(&powervr_driver);
@@ -1069,7 +1073,9 @@ sys_deinit:
 
 #if defined (PVR_LDM_PLATFORM_MODULE)
 #if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if !defined(PM_RUNTIME_SUPPORT)
 	platform_device_unregister(&powervr_device);
+#endif
 #endif
 	platform_driver_unregister(&powervr_driver);
 #endif
@@ -1167,7 +1173,9 @@ static void __exit PVRCore_Cleanup(void)
 
 #if defined (PVR_LDM_PLATFORM_MODULE)
 #if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if !defined(PM_RUNTIME_SUPPORT)
 	platform_device_unregister(&powervr_device);
+#endif
 #endif
 	platform_driver_unregister(&powervr_driver);
 #endif
