@@ -61,6 +61,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <linux/pm_runtime.h>
 #endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
+#include <linux/reset.h>
+#endif
+
 #if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
 #include <linux/opp.h>
 #endif
@@ -85,6 +89,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
 extern struct platform_device *gpsPVRLDMDev;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
+#if 0
+extern struct reset_control *rstc;
+#endif
+extern bool already_deasserted;
+#endif
 #endif
 
 static PVRSRV_ERROR PowerLockWrap(SYS_SPECIFIC_DATA *psSysSpecData, IMG_BOOL bTryLock)
@@ -191,6 +201,7 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 #if !defined(NO_HARDWARE)
 	SYS_SPECIFIC_DATA *psSysSpecData = (SYS_SPECIFIC_DATA *) psSysData->pvSysSpecificData;
 
+	printk("Is SGX already enabled??? psSysSpecData->sSGXClocksEnabled = %d \n",psSysSpecData->sSGXClocksEnabled);
 	/* SGX clocks already enabled? */
 	if (atomic_read(&psSysSpecData->sSGXClocksEnabled) != 0)
 	{
@@ -219,7 +230,9 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 		{
 			PVR_ASSERT(pdata->device_scale != IMG_NULL);
 			res = pdata->device_scale(&gpsPVRLDMDev->dev,
+#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3,4,0))
 									  &gpsPVRLDMDev->dev,
+#endif
 									  psSysSpecData->pui32SGXFreqList[max_freq_index]);
 			if (res == 0)
 			{
@@ -243,12 +256,25 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 		 * pm_runtime_get_sync returns 1 after the module has
 		 * been reloaded.
 		 */
+#if defined(PM_RUNTIME_SUPPORT)
 		int res = pm_runtime_get_sync(&gpsPVRLDMDev->dev);
 		if (res < 0)
 		{
 			PVR_DPF((PVR_DBG_ERROR, "EnableSGXClocks: pm_runtime_get_sync failed (%d)", -res));
 			return PVRSRV_ERROR_UNABLE_TO_ENABLE_CLOCK;
 		}
+#if 0
+                if (!already_deasserted)
+                {
+                        int ret = reset_control_is_reset(rstc);
+                        if (ret <= 0)
+                        {
+                                dev_err(&gpsPVRLDMDev->dev, "%s: error: reset_control_is_reset\n", __func__);
+                        }
+                }
+                reset_control_put(rstc);
+#endif
+#endif
 	}
 #endif /* defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI) */
 
@@ -256,6 +282,7 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 
 	/* Indicate that the SGX clocks are enabled */
 	atomic_set(&psSysSpecData->sSGXClocksEnabled, 1);
+	printk("SGX clock enabled successfully psSysSpecData->sSGXClocksEnabled = %d\n",psSysSpecData->sSGXClocksEnabled);
 
 #else	/* !defined(NO_HARDWARE) */
 	PVR_UNREFERENCED_PARAMETER(psSysData);
@@ -291,11 +318,13 @@ IMG_VOID DisableSGXClocks(SYS_DATA *psSysData)
 
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
 	{
+#if defined(PM_RUNTIME_SUPPORT)
 		int res = pm_runtime_put_sync(&gpsPVRLDMDev->dev);
 		if (res < 0)
 		{
 			PVR_DPF((PVR_DBG_ERROR, "DisableSGXClocks: pm_runtime_put_sync failed (%d)", -res));
 		}
+#endif
 	}
 #if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
 	{
@@ -314,7 +343,9 @@ IMG_VOID DisableSGXClocks(SYS_DATA *psSysData)
 		{
 			PVR_ASSERT(pdata->device_scale != IMG_NULL);
 			res = pdata->device_scale(&gpsPVRLDMDev->dev,
+#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3,4,0))
 									  &gpsPVRLDMDev->dev,
+#endif
 									  psSysSpecData->pui32SGXFreqList[0]);
 			if (res == 0)
 			{
@@ -359,7 +390,7 @@ IMG_VOID DisableSGXClocks(SYS_DATA *psSysData)
 static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 {
 	PVR_ASSERT(psSysSpecData->psGPTimer == NULL);
-
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3,4,0)) || !defined(MODULE)
 	/*
 	 * This code could try requesting registers 9, 10, and 11,
 	 * stopping at the first succesful request.  We'll stick with
@@ -388,6 +419,9 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	 * physical address of the counter register.
 	 */
 	psSysSpecData->sTimerRegPhysBase.uiAddr = SYS_TI43xx_GPTIMER_REGS_SYS_PHYS_BASE;
+#else   /* (LINUX_VERSION_CODE <= KERNEL_VERSION(3,4,0)) || !defined(MODULE) */
+        (void)psSysSpecData;
+#endif  /* (LINUX_VERSION_CODE <= KERNEL_VERSION(3,4,0)) || !defined(MODULE) */
 
 	return PVRSRV_OK;
 }
@@ -448,7 +482,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 #if !defined(PM_RUNTIME_SUPPORT)
 	PVR_ASSERT(psSysSpecData->sTimerRegPhysBase.uiAddr == 0);
 
-	psCLK = clk_get(NULL, "sgx_fck");
+	psCLK = clk_get(NULL, "sgx_ck");
 	if (IS_ERR(psCLK))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "EnableSystemClocks: Couldn't get SGX Interface Clock"));
@@ -633,7 +667,7 @@ static PVRSRV_ERROR AcquireGPTimer(SYS_SPECIFIC_DATA *psSysSpecData)
 	PVR_UNREFERENCED_PARAMETER(psSysSpecData);
 
 #if !defined(PM_RUNTIME_SUPPORT)
-	psCLK = clk_get(NULL, "sgx_fck");
+	psCLK = clk_get(NULL, "sgx_ck");
 	if (IS_ERR(psCLK))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "EnableSystemClocks: Couldn't get SGX Interface Clock"));
@@ -704,7 +738,7 @@ IMG_VOID DisableSystemClocks(SYS_DATA *psSysData)
 	DisableSGXClocks(psSysData);
 
 #if !defined(PM_RUNTIME_SUPPORT)
-	psCLK = clk_get(NULL, "sgx_fck");
+	psCLK = clk_get(NULL, "sgx_ck");
 	if (IS_ERR(psCLK))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "EnableSystemClocks: Couldn't get SGX Interface Clock"));
@@ -719,7 +753,9 @@ IMG_VOID DisableSystemClocks(SYS_DATA *psSysData)
 PVRSRV_ERROR SysPMRuntimeRegister(void)
 {
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
+#if defined(PM_RUNTIME_SUPPORT)
 	pm_runtime_enable(&gpsPVRLDMDev->dev);
+#endif
 #endif
 	return PVRSRV_OK;
 }
@@ -727,7 +763,9 @@ PVRSRV_ERROR SysPMRuntimeRegister(void)
 PVRSRV_ERROR SysPMRuntimeUnregister(void)
 {
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
+#if defined(PM_RUNTIME_SUPPORT)
 	pm_runtime_disable(&gpsPVRLDMDev->dev);
+#endif
 #endif
 	return PVRSRV_OK;
 }
@@ -826,7 +864,9 @@ PVRSRV_ERROR SysDvfsDeinitialize(SYS_SPECIFIC_DATA *psSysSpecificData)
 
 		PVR_ASSERT(pdata->device_scale != IMG_NULL);
 		res = pdata->device_scale(&gpsPVRLDMDev->dev,
+#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3,4,0))
 								  &gpsPVRLDMDev->dev,
+#endif
 								  psSysSpecificData->pui32SGXFreqList[0]);
 		if (res == -EBUSY)
 		{

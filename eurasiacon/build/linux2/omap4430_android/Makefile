@@ -60,6 +60,11 @@ TARGET_PRODUCT ?= omap3evm
 SGXCORE := 530
 SGX_CORE_REV := 125
 
+ifeq ($(OMAPES),9.x)
+PVR_SYSTEM := ti43xx
+endif
+
+
 ifeq ($(OMAPES),5.x)
 PVR_SYSTEM := omap3
 endif
@@ -118,15 +123,23 @@ SUPPORT_ACTIVE_POWER_MANAGEMENT := 0
 DISPLAY_CONTROLLER := omaplfb 
 ifeq ($(OMAPES),4.x)
 DISPLAY_CONTROLLER_COMPONENT := dc_ti335x_linux
-else
+endif
+ifeq ($(OMAPES),5.x)
 DISPLAY_CONTROLLER_COMPONENT := dc_omapfb3_linux
+endif
+ifeq ($(OMAPES),9.x)
+DISPLAY_CONTROLLER_COMPONENT := dc_ti43xx_linux
 endif
 OMAP_NON_FLIP_DISPLAY := 1
 else
 ifeq ($(OMAPES),4.x)
 DISPLAY_CONTROLLER_COMPONENT := dc_ti335x_linux
-else
+endif
+ifeq ($(OMAPES),5.x)
 DISPLAY_CONTROLLER_COMPONENT := dc_omapfb3_linux
+endif
+ifeq ($(OMAPES),9.x)
+DISPLAY_CONTROLLER_COMPONENT := dc_ti43xx_linux
 endif
 endif
 

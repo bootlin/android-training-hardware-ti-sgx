@@ -21,6 +21,9 @@
 
 load_pvr()
 {
+	/bin/devmem 0x44DF0414 w 0x1
+        /bin/devmem 0x44DF0410 w 0x0
+        /bin/devmem 0x44DF0414
 
         insmod /system/bin/sgx/pvrsrvkm.ko
         insmod /system/bin/sgx/omaplfb.ko
