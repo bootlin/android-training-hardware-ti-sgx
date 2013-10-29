@@ -115,6 +115,11 @@ IMG_VOID LinuxLockMutex(PVRSRV_LINUX_MUTEX *psPVRSRVMutex)
     atomic_dec(&psPVRSRVMutex->Count);
 }
 
+IMG_VOID LinuxLockMutexNested(PVRSRV_LINUX_MUTEX *psPVRSRVMutex, unsigned int uiLockClass)
+{
+        LinuxLockMutex(psPVRSRVMutex);
+}
+
 PVRSRV_ERROR LinuxLockMutexInterruptible(PVRSRV_LINUX_MUTEX *psPVRSRVMutex)
 {
     if(down_interruptible(&psPVRSRVMutex->sSemaphore) == -EINTR)

@@ -201,7 +201,6 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 #if !defined(NO_HARDWARE)
 	SYS_SPECIFIC_DATA *psSysSpecData = (SYS_SPECIFIC_DATA *) psSysData->pvSysSpecificData;
 
-	printk("Is SGX already enabled??? psSysSpecData->sSGXClocksEnabled = %d \n",psSysSpecData->sSGXClocksEnabled);
 	/* SGX clocks already enabled? */
 	if (atomic_read(&psSysSpecData->sSGXClocksEnabled) != 0)
 	{
@@ -282,7 +281,6 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 
 	/* Indicate that the SGX clocks are enabled */
 	atomic_set(&psSysSpecData->sSGXClocksEnabled, 1);
-	printk("SGX clock enabled successfully psSysSpecData->sSGXClocksEnabled = %d\n",psSysSpecData->sSGXClocksEnabled);
 
 #else	/* !defined(NO_HARDWARE) */
 	PVR_UNREFERENCED_PARAMETER(psSysData);
