@@ -308,11 +308,9 @@ static LDM_DRV powervr_driver = {
 };
 
 LDM_DEV *gpsPVRLDMDev;
-#if 0
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
 struct reset_control *rstc;
 bool already_deasserted = false;
-#endif
 #endif
 #if defined(MODULE) && defined(PVR_LDM_PLATFORM_MODULE) && \
 	!defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
@@ -356,9 +354,8 @@ static int __devinit PVRSRVDriverProbe(LDM_DEV *pDevice, const struct pci_device
 #endif
 {
 	SYS_DATA *psSysData;
-	// int ret;
+	int ret;
 	PVR_TRACE(("PVRSRVDriverProbe(pDevice=%p)", pDevice));
-#if 0
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
         rstc = reset_control_get(&pDevice->dev, NULL);
 
@@ -388,7 +385,6 @@ static int __devinit PVRSRVDriverProbe(LDM_DEV *pDevice, const struct pci_device
                 return ret;
         }
 
-#endif
 #endif
 #if 0   /* INTEGRATION_POINT */
 	/* Some systems require device-specific system initialisation.
