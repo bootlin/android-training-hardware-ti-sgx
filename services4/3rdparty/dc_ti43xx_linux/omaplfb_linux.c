@@ -745,7 +745,6 @@ OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
 	struct omapfb_info *ofbi = FB2OFB(psDevInfo->psLINFBInfo);
 	struct omapfb2_device *psDSSDev = ofbi->fbdev;
 	OMAP_DSS_MANAGER(psDSSMan, psDSSDev);
-	printk("vs\n");
 	if (psDSSMan != NULL && WAIT_FOR_VSYNC(psDSSMan) != NULL)
 	{
 		int res = WAIT_FOR_VSYNC(psDSSMan)(psDSSMan);
