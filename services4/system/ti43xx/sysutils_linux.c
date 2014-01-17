@@ -61,10 +61,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <linux/pm_runtime.h>
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
-#include <linux/reset.h>
-#endif
-
 #if defined(SYS_OMAP4_HAS_DVFS_FRAMEWORK)
 #include <linux/opp.h>
 #endif
@@ -89,12 +85,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI)
 extern struct platform_device *gpsPVRLDMDev;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,11,0))
-#if 0
-extern struct reset_control *rstc;
-#endif
-extern bool already_deasserted;
-#endif
 #endif
 
 static PVRSRV_ERROR PowerLockWrap(SYS_SPECIFIC_DATA *psSysSpecData, IMG_BOOL bTryLock)
@@ -262,17 +252,6 @@ PVRSRV_ERROR EnableSGXClocks(SYS_DATA *psSysData)
 			PVR_DPF((PVR_DBG_ERROR, "EnableSGXClocks: pm_runtime_get_sync failed (%d)", -res));
 			return PVRSRV_ERROR_UNABLE_TO_ENABLE_CLOCK;
 		}
-#if 0
-                if (!already_deasserted)
-                {
-                        int ret = reset_control_is_reset(rstc);
-                        if (ret <= 0)
-                        {
-                                dev_err(&gpsPVRLDMDev->dev, "%s: error: reset_control_is_reset\n", __func__);
-                        }
-                }
-                reset_control_put(rstc);
-#endif
 #endif
 	}
 #endif /* defined(LDM_PLATFORM) && !defined(PVR_DRI_DRM_NOT_PCI) */
